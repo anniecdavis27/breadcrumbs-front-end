@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Nav from './Nav'
 import {
   StyleSheet,
@@ -7,23 +7,41 @@ import {
   TouchableHighlight,
   Image,
   Button,
+  Dimensions,
+  Alert
 } from "react-native";
 import { darkGreen, textGray } from "../theme";
+import MapView, { PROVIDER_GOOGLE, LATITUDE, LONGITUDE, AnimatedRegion } from 'react-native-maps';
 
 export default function Track({ navigation }) {
+    const [latitude, setlatitude] = useState({})
+    const [longitude, setlongitude] = useState({})
+    
+		useEffect(
+            () => {
+                let mounted = true
+            navigator.geolocation.getCurrentPosition(
+			position => {
+                const latitude = JSON.stringify(position.coords.latitude);
+                const longitude = JSON.stringify(position.coords.longitude);
+                
+                setlatitude({ latitude });
+                setlongitude({ longitude });
+			},
+			error => Alert.alert(error.message),
+			{ enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+        )
+    mounted = false
+    },[setlatitude])
+
+    console.log(latitude, longitude)
+
+
   return (
     <View style={styles.container}>
-      <Image
-        style={styles.whiteLogo}
-        source={require("../logos/Breadcrumbs-WH.png")}
-      />
-      {/* <Button title="Sign In" style={styles.btn} color="#b5b5b5" />
-      <StatusBar style="auto" /> */}
-      <TouchableHighlight style={styles.btn} underlayColor="green">
-        <Text style={styles.btnText}>Track</Text>
-      </TouchableHighlight>
-      <Nav navigation={navigation} />
-    </View>
+        <Text>My location is</Text>
+    {/* <MapView style={styles.mapStyle} /> */}
+  </View>
   );
 }
 
@@ -49,6 +67,10 @@ const styles = StyleSheet.create({
     borderRadius: 40,
     display: "flex",
     justifyContent: "center",
+  },
+  mapStyle: {
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height,
   },
 
 });
