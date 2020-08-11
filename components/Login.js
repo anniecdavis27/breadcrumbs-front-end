@@ -8,7 +8,7 @@ import {
   Button,
   TextInput
 } from "react-native";
-import { darkGreen, textGray } from "../theme";
+import { darkGreen, textGray, white } from "../theme";
 
 export default function Login({ navigation }) {
   return (
@@ -17,11 +17,15 @@ export default function Login({ navigation }) {
         style={styles.whiteLogo}
         source={require("../logos/Breadcrumbs-WH.png")}
       />
-      <TextInput style={{height: 40}}
-        placeholder="Type here to translate!"></TextInput>
+      
+      <TextInput style={styles.textInput}
+        placeholder="Username"></TextInput>
+        <TextInput style={styles.textInput} secureTextEntry={true}
+        placeholder="Password"></TextInput>
       <TouchableHighlight
+      onPress={() => navigation.navigate("Dash")}
       style={styles.btn}
-      underlayColor="orange"
+      underlayColor="green"
     >
         
         <Text style={styles.btnText}>
@@ -49,10 +53,6 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontFamily: "Helvetica",
   },
-
-  whiteLogo: {
-    width: 200,
-  },
   btn: {
       margin: 20,
       width: 150,
@@ -72,5 +72,18 @@ hl: {
 textContainer: {
     display: "flex",
     flexDirection: "row",
+},
+textInput: {
+    backgroundColor: white,
+    paddingTop: 10,
+    paddingBottom: 10,
+    paddingLeft: 20,
+    paddingRight: 20,
+    width: 275,
+    marginTop: 30,
+    marginBottom: 20,
+    borderWidth: 5,
+    borderColor: textGray,
+    borderRadius: 8, 
 }
 });

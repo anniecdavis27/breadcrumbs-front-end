@@ -1,5 +1,5 @@
 import React from "react";
-
+import Nav from './Nav'
 import {
   StyleSheet,
   Text,
@@ -10,28 +10,20 @@ import {
 } from "react-native";
 import { darkGreen, textGray } from "../theme";
 
-export default function Home({ navigation }) {
-    
+export default function Dash({ navigation }) {
   return (
-      <>
     <View style={styles.container}>
       <Image
         style={styles.whiteLogo}
         source={require("../logos/Breadcrumbs-WH.png")}
       />
-      
-      <TouchableHighlight
-        style={styles.btn}
-        onPress={() => navigation.navigate("Sign In")}
-        underlayColor="green"
-      >
-        <Text style={styles.btnText}>Sign In</Text>
+      {/* <Button title="Sign In" style={styles.btn} color="#b5b5b5" />
+      <StatusBar style="auto" /> */}
+      <TouchableHighlight style={styles.btn} underlayColor="green">
+        <Text style={styles.btnText}>Dash</Text>
       </TouchableHighlight>
-      <View style={styles.textContainer}>
-      <Text style={styles.text}>Not registered yet? Sign up </Text><Text style={styles.hl} onPress={() => navigation.navigate("Register")}>here!</Text>
-      </View>
-      </View>
-      </>
+     <Nav navigation={navigation} />
+     </View>
   );
 }
 
@@ -58,14 +50,20 @@ const styles = StyleSheet.create({
     display: "flex",
     justifyContent: "center",
   },
-  text: {
-      color: textGray,
+  nav: {
+    display: "flex",
+    flexDirection: "row",
+    position: "absolute",
+    bottom: 0,
+    width: "100%",
   },
-  hl: {
-      color: '#ffffff',
+  navItem: {
+    width: "25%",
+    height: 85,
+    borderWidth: 1,
+    borderRadius: 3,
+    borderColor: darkGreen,
+    justifyContent: "center",
+    backgroundColor: "#0d2e00"
   },
-  textContainer: {
-      display: "flex",
-      flexDirection: "row",
-  }
 });
