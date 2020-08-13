@@ -17,11 +17,13 @@ import MapView, {
   Marker,
   google,
 } from "react-native-maps";
+import { getDistance, getPreciseDistance } from 'geolib';
 
 export default function Track({ navigation, initialParams }) {
   const [data, setData] = useState({});
   const [startPoint, setStartPoint] = useState({lat: 0, lng: 0})
   const [endPoint, setEndPoint] = useState({lat: 0, lng: 0})
+  const [pdis, setPdis] = useState()
   const [startTrue, isStartTrue] = useState(false)
   const [endTrue, isEndTrue] = useState(false)
   const [location, setLocation] = useState({
@@ -30,6 +32,9 @@ export default function Track({ navigation, initialParams }) {
     latitudeDelta: 0.09,
     longitudeDelta: 0.05,
   });
+
+const [currentPin, setPin] = useState([])
+const trackedPins = [startPoint]
 
   useEffect(() => {
     let mounted = true;
@@ -41,8 +46,8 @@ export default function Track({ navigation, initialParams }) {
         setLocation({
           latitude: data.coords.latitude,
           longitude: data.coords.longitude,
-          latitudeDelta: 0.09,
-          longitudeDelta: 0.05,
+        //   latitudeDelta: 0.09,
+        //   longitudeDelta: 0.05,
         });
       },
       (error) => Alert.alert(error.message),
@@ -58,23 +63,18 @@ export default function Track({ navigation, initialParams }) {
         (position) => {
           const data = position;
           setStartPoint({
-            lat: data.coords.latitude,
-            lng: data.coords.longitude,
+            latitude: data.coords.latitude,
+            longitude: data.coords.longitude,
           });
+          
         },
         (error) => Alert.alert(error.message),
         { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
       )} else {
           return Alert.alert("Start Point has already been set")
       }
-    
-    // console.log(location);
-    // const latlng = { lat: location.latitude, lng: location.longitude };
-    // console.log(latlng);
     isStartTrue(true)
   };
-
-  console.log("start Point", startPoint)
 
   const addEnd = (e) => {
     e.preventDefault();
@@ -83,8 +83,8 @@ export default function Track({ navigation, initialParams }) {
         (position) => {
           const data = position;
           setEndPoint({
-            lat: data.coords.latitude,
-            lng: data.coords.longitude,
+            latitude: data.coords.latitude,
+            longitude: data.coords.longitude,
           });
         },
         (error) => Alert.alert(error.message),
@@ -97,8 +97,26 @@ export default function Track({ navigation, initialParams }) {
     // console.log(latlng);
     isEndTrue(true)
   };
-console.log("Start Point", startPoint)
-  console.log("End Point", endPoint)
+
+  const preciseDistance = () => {
+    let precDis = getPreciseDistance(
+     { latitude: startPoint.latitude, longitude: startPoint.longitude },
+     { latitude: endPoint.latitude, longitude: endPoint.longitude}
+   );
+   setPdis(precDis)
+   console.log("pdis", pdis)
+ };
+
+  const resetTrack = (e) => {
+      e.preventDefault()
+      isEndTrue(false)
+      isStartTrue(false)
+      preciseDistance()
+  }
+
+  
+//   console.log("End Point", endPoint)
+//   console.log("tracked pins", trackedPins)
 
 //   function placeMarker(location) {
 //     var clickedLocation = new google.maps.LatLng(location);
@@ -126,8 +144,8 @@ console.log("Start Point", startPoint)
       >
         {startTrue ? <Marker
           coordinate={{
-            latitude: startPoint.lat,
-            longitude: startPoint.lng,
+            latitude: startPoint.latitude,
+            longitude: startPoint.longitude,
           }}
         ><Image
         style={styles.markers}
@@ -136,8 +154,8 @@ console.log("Start Point", startPoint)
 
          {endTrue ? <Marker
           coordinate={{
-            latitude: endPoint.lat,
-            longitude: endPoint.lng,
+            latitude: endPoint.latitude,
+            longitude: endPoint.longitude,
           }}
         ><Image
         style={styles.markers}
@@ -146,23 +164,23 @@ console.log("Start Point", startPoint)
       </MapView>
       <View style={styles.nav}>
         <TouchableHighlight
-          style={styles.navItem}
+          style={styles.navItemOne}
           underlayColor="green"
           onPress={addStart}
         >
           <Text style={styles.btnText}>Start</Text>
         </TouchableHighlight>
         <TouchableHighlight
-          style={styles.navItem}
+          style={styles.navItemTwo}
           underlayColor="green"
           onPress={addEnd}
         >
           <Text style={styles.btnText}>End</Text>
         </TouchableHighlight>
         <TouchableHighlight
-          style={styles.navItem}
+          style={styles.navItemThree}
           underlayColor="green"
-          onPress={() => navigation.navigate("Account")}
+          onPress={resetTrack}
         >
           <Text style={styles.btnText}>Save/Clear</Text>
         </TouchableHighlight>
@@ -206,14 +224,34 @@ const styles = StyleSheet.create({
     bottom: 25,
     width: "100%",
   },
-  navItem: {
+  navItemOne: {
     width: 100,
     height: 100,
     borderWidth: 1,
     borderRadius: 50,
-    borderColor: darkRed,
+    borderColor: "#4C8100",
     justifyContent: "center",
-    backgroundColor: darkRed,
+    backgroundColor: "#4C8100",
+    padding: 10,
+  },
+  navItemTwo: {
+    width: 100,
+    height: 100,
+    borderWidth: 1,
+    borderRadius: 50,
+    borderColor: "#810000",
+    justifyContent: "center",
+    backgroundColor: "#810000",
+    padding: 10,
+  },
+  navItemThree: {
+    width: 100,
+    height: 100,
+    borderWidth: 1,
+    borderRadius: 50,
+    borderColor: "#004CA0",
+    justifyContent: "center",
+    backgroundColor: "#004CA0",
     padding: 10,
   },
   btnText: {
