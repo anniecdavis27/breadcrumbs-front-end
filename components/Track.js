@@ -26,6 +26,7 @@ export default function Track({ navigation, initialParams }) {
   const [pdis, setPdis] = useState()
   const [startTrue, isStartTrue] = useState(false)
   const [endTrue, isEndTrue] = useState(false)
+  const [timer, setTimer] = useState(null)
   const [location, setLocation] = useState({
     latitude: 43.96,
     longitude: -74.04,
@@ -33,8 +34,8 @@ export default function Track({ navigation, initialParams }) {
     longitudeDelta: 0.05,
   });
 
-const [currentPin, setPin] = useState([])
-const trackedPins = [startPoint]
+const [currentPin, setPin] = useState({})
+const [trackedPins, setTrackedPins] = ([startPoint])
 
   useEffect(() => {
     let mounted = true;
@@ -46,8 +47,8 @@ const trackedPins = [startPoint]
         setLocation({
           latitude: data.coords.latitude,
           longitude: data.coords.longitude,
-        //   latitudeDelta: 0.09,
-        //   longitudeDelta: 0.05,
+          latitudeDelta: 0.09,
+          longitudeDelta: 0.05,
         });
       },
       (error) => Alert.alert(error.message),
@@ -74,7 +75,41 @@ const trackedPins = [startPoint]
           return Alert.alert("Start Point has already been set")
       }
     isStartTrue(true)
+    // preciseDistance()
+    dropPin();
   };
+  
+  function dropPin(){
+    
+    // do whatever you like here
+    navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const data = position;
+          setPin({
+            latitude: data.coords.latitude,
+            longitude: data.coords.longitude,
+          });
+          
+        },
+        (error) => Alert.alert(error.message),
+        { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+      )
+        setTrackedPins([currentPin])
+        setTimer(setTimeout(dropPin, 5000));
+
+        //FIGURING OUT HOW TO CREATE A NEW PIN EVERY TIME THIS DROP PIN FUNCTION RUNS -- THIS DOESNT WORK
+        return <Marker
+        coordinate={{
+          latitude: currentPin.latitude,
+          longitude: currentPin.longitude,
+        }}
+      ><Text>Crumb</Text></Marker>
+      
+}
+
+console.log('tracked pins', trackedPins)
+
+console.log('pinned', currentPin)
 
   const addEnd = (e) => {
     e.preventDefault();
@@ -96,23 +131,30 @@ const trackedPins = [startPoint]
     // const latlng = { lat: location.latitude, lng: location.longitude };
     // console.log(latlng);
     isEndTrue(true)
+    setTimer(clearTimeout(timer))
   };
 
-  const preciseDistance = () => {
-    let precDis = getPreciseDistance(
-     { latitude: startPoint.latitude, longitude: startPoint.longitude },
-     { latitude: endPoint.latitude, longitude: endPoint.longitude}
-   );
-   setPdis(precDis)
-   console.log("pdis", pdis)
- };
+//   const preciseDistance = () => {
+//     let precDis = getPreciseDistance(
+//      { latitude: startPoint.latitude, longitude: startPoint.longitude },
+//      { latitude: location.latitude, longitude: location.longitude }
+//    );
+
+//    setPdis(precDis)
+//    console.log("pdis", pdis)
+   
+//  };
 
   const resetTrack = (e) => {
       e.preventDefault()
       isEndTrue(false)
       isStartTrue(false)
-      preciseDistance()
   }
+
+//   console.log(startPoint)
+//   console.log(endPoint)
+
+  
 
   
 //   console.log("End Point", endPoint)
