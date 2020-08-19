@@ -9,6 +9,7 @@ npm-debug.*
 *.orig.*
 web-build/
 app.json
+apiConfig.js
 
 # macOS
 .DS_Store

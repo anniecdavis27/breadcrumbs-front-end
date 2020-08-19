@@ -17,7 +17,7 @@ import MapView, {
   Marker,
   google,
 } from "react-native-maps";
-import { getDistance, getPreciseDistance } from 'geolib';
+// import { getDistance, getPreciseDistance } from 'geolib';
 
 export default function Track({ navigation, initialParams }) {
   const [data, setData] = useState({});
@@ -35,7 +35,7 @@ export default function Track({ navigation, initialParams }) {
   });
 
 const [currentPin, setPin] = useState({})
-const [trackedPins, setTrackedPins] = ([startPoint])
+const [trackedPins, setTrackedPins] = useState([{}])
 
   useEffect(() => {
     let mounted = true;
@@ -80,8 +80,6 @@ const [trackedPins, setTrackedPins] = ([startPoint])
   };
   
   function dropPin(){
-    
-    // do whatever you like here
     navigator.geolocation.getCurrentPosition(
         (position) => {
           const data = position;
@@ -94,22 +92,18 @@ const [trackedPins, setTrackedPins] = ([startPoint])
         (error) => Alert.alert(error.message),
         { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
       )
-        setTrackedPins([currentPin])
-        setTimer(setTimeout(dropPin, 5000));
+      setTrackedPins([...trackedPins, currentPin])
+        console.log('these are tracked pins', trackedPins)
+        setTimer(setTimeout(dropPin, 1000));
 
         //FIGURING OUT HOW TO CREATE A NEW PIN EVERY TIME THIS DROP PIN FUNCTION RUNS -- THIS DOESNT WORK
-        return <Marker
-        coordinate={{
-          latitude: currentPin.latitude,
-          longitude: currentPin.longitude,
-        }}
-      ><Text>Crumb</Text></Marker>
-      
+        // return <Marker
+        // coordinate={{
+        //   latitude: currentPin.latitude,
+        //   longitude: currentPin.longitude,
+        // }}
+    //   ><Text>Crumb</Text></Marker>
 }
-
-console.log('tracked pins', trackedPins)
-
-console.log('pinned', currentPin)
 
   const addEnd = (e) => {
     e.preventDefault();
@@ -132,6 +126,7 @@ console.log('pinned', currentPin)
     // console.log(latlng);
     isEndTrue(true)
     setTimer(clearTimeout(timer))
+    console.log('tracked pins', trackedPins)
   };
 
 //   const preciseDistance = () => {
@@ -155,7 +150,7 @@ console.log('pinned', currentPin)
 //   console.log(endPoint)
 
   
-
+console.log('pinned', currentPin)
   
 //   console.log("End Point", endPoint)
 //   console.log("tracked pins", trackedPins)
